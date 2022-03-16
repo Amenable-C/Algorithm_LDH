@@ -28,7 +28,7 @@ void Heapify(int* numbers, int parent, int size) {
     }
 }
 
-void quickSort(int* numbers, int left, int right, int k) { // right는 N-1
+void quickSort(int* numbers, int left, int right, int k, int N) { // right는 N-1
     if (left >= right) return;
 
     int pivot = left;
@@ -36,49 +36,36 @@ void quickSort(int* numbers, int left, int right, int k) { // right는 N-1
     int rStart = right;
     static int goToK = 0;
 
-    while (lStart <= rStart) {
-        while (numbers[pivot] >= numbers[lStart] && lStart <= right) {
+    while (lStart <= rStart) { // 처음 빼고는 같은 경우 존재X
+        while (numbers[pivot] >= numbers[lStart] && lStart <= right) {  // 넘어가도 rStart로 swap이라서 상관X
             lStart++;
         }
-        while (numbers[pivot] <= numbers[rStart] && rStart > left) {
+        while (numbers[pivot] < numbers[rStart] && rStart > left) { 
             rStart--;
         }
-
-
-        //if (lStart >= rStart && numbers[pivot] > numbers[rStart]) { // 딱 지나친 순간임
-        //    swap(numbers[pivot], numbers[rStart]);
-        //    goToK++;
-        //    if (goToK == k) {
-        //        for (int i = 0; i < 500; i++) {
-        //            cout << numbers[i] << endl;
-        //        }
-        //        cout << "here" << endl;
-        //    }
-        //}
-        //else {
-        //    swap(numbers[lStart], numbers[rStart]);
-        //}
-        if (lStart > rStart && numbers[pivot] > numbers[rStart]) {
+        
+        if (lStart >=rStart) {
             swap(numbers[pivot], numbers[rStart]);
-            goToK++;
-            if (goToK == k) {
-                 for (int i = 0; i < 500; i++) {
-                    cout << numbers[i] << endl;
-                 }
-                cout << "here" << endl;
-            }
+            // pivot 자신끼리 바꾸는 경우도 존재
+            // i 가 right 넘어가는 경우도 존재  
         }
         else {
             swap(numbers[lStart], numbers[rStart]);
         }
 
     }
+    // 위의 while문에서 나오면 하나의 pivot이 자기 자리를 찾은 경우
+    goToK++;
+    if (goToK == k) {
 
-    if (goToK != k) {
-        quickSort(numbers, left, rStart - 1, k);
-        quickSort(numbers, rStart + 1, right, k);
+        for (int i = 0; i < N; i++)
+            cout << numbers[i] << endl;
     }
 
+    if(goToK < k){
+        quickSort(numbers, left, rStart - 1, k, N);
+        quickSort(numbers, rStart + 1, right, k, N);
+    }
 
 }
 
@@ -137,10 +124,7 @@ int main()
 
     case 3:
         int goToK = 0;
-        quickSort(numbers, 0, N - 1, k);
-        for (int i = 0; i < N; i++) {
-            cout << numbers[i] << endl;
-        }
+        quickSort(numbers, 0, N - 1, k, N);
         break;
     }
 
