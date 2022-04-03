@@ -8,13 +8,13 @@ class Node {
 private:
 	int data;
 	Node* link;
-	Node* prevent;
 };
 
 class CircularList {
 public:
-	void Add(int);
-	int Delete(int);
+	void Add(int); // 초기값 정렬
+	int Delete(int); // k번째 수를 출력하고 delete하기.
+	void Set(); // 초기값 정렬 후 current 위치 설정.
 	CircularList() {
 		size = 0;
 		current = NULL;
@@ -25,6 +25,7 @@ public:
 private:
 	Node* current;
 	int size;
+	Node* last; // Node에 data와 link만을 prevent를 사용하지 않기 위해 last를 설정. (k가 1일때 필요)
 };
 
 void CircularList::Add(int x) {
@@ -35,37 +36,39 @@ void CircularList::Add(int x) {
 	if (!current){
 		current = newNode;
 		current->link = current;
-		current->prevent = current;
 	}
 	else {
-		current->link = current->link->link;
-		current->link = newNode;
-		current->prevent = current;
-		
-		
 		newNode->link = current->link;
 		current->link = newNode;
+		current = current->link;
 	}
+	last = newNode;
 }
 
 int CircularList::Delete(int kTh) {
-
-	for (int i = 0; i < kTh - 1; i++) {
-		prevent->link = current->link;
-		current->link->
-		current->link = current->link->link;
-
-	}
-	
-	/*delete nextNode;*/
-
-	/*prevent->link = current->link;
-
-	int returnNum = current->data;
-	delete current;
 	size--;
-	return returnNum;*/
-	return 1;
+	for (int i = 0; i < kTh - 2; i++) {
+		current = current->link;
+	}
+
+	Node* deleteNode;
+	if (kTh == 1) { // last의 link를 이어주어야함.
+		deleteNode = current;
+		last->link = last->link->link;
+	}
+	else { // current의 link를 이어주어야함.
+		deleteNode = current->link;
+		current->link = current->link->link;
+	}
+
+	current = current->link;
+	int deleteNumber = deleteNode->data;
+	delete deleteNode;
+	return deleteNumber;
+}
+
+void CircularList::Set() {
+	current = current->link;
 }
 
 int main() {
@@ -78,8 +81,9 @@ int main() {
 		cl.Add(i);
 	}
 
+	cl.Set();
 	cout << "<";
-
+	
 	while (cl.getSize()) {
 		if (cl.getSize() == 1) {
 			cout << cl.Delete(k) << ">";
